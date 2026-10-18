@@ -1,5 +1,6 @@
 """Integración real de widgets Tkinter con el servidor TCP de prueba."""
 from pathlib import Path
+import gc
 import tempfile
 import threading
 import time
@@ -14,6 +15,17 @@ from servidor.servidor import ServidorBlockchain
 
 
 class PruebasInterfaz(unittest.TestCase):
+    def setUp(self):
+        # Tcl debe destruirse en el hilo que creó la ventana. La recolección
+        # automática podría ejecutarse desde un trabajador TCP de otra prueba.
+        self.gc_activo = gc.isenabled()
+        gc.disable()
+
+    def tearDown(self):
+        gc.collect()
+        if self.gc_activo:
+            gc.enable()
+
     def test_formulario_minado_vistas_y_detalle(self):
         with tempfile.TemporaryDirectory() as temporal:
             with ServidorBlockchain(('127.0.0.1', 0), 1, Path(temporal) / 'clave.key') as servidor:

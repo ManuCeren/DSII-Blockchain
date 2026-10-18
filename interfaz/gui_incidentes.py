@@ -3,13 +3,14 @@ Interfaz Gráfica (Tkinter) - Módulo de Bloque, Minado y Encriptación (Servido
 Blockchain para Registro de Incidentes de Seguridad Informática
 """
 
+import argparse
 import threading
 import queue
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 
 from types import SimpleNamespace
-from cliente.cliente import Cliente
+from cliente.cliente import Cliente, argumentos_cliente, puerto_cliente
 
 
 class AppBlockchain(tk.Tk):
@@ -21,6 +22,7 @@ class AppBlockchain(tk.Tk):
 
         # Estas son vistas locales de JSON; el servidor administra el estado real.
         self.cliente = cliente if cliente is not None else Cliente()
+        self.title(f'Blockchain de Incidentes — {self.cliente.host}:{self.cliente.puerto}')
         self.bc = SimpleNamespace(cadena=[], dificultad=4)
         self.bloque_propuesto = None
         self.minando = False
@@ -42,6 +44,7 @@ class AppBlockchain(tk.Tk):
                    command=self._cambiar_dificultad).pack(side="left", padx=4)
         ttk.Button(barra, text="🔄 Refrescar",
                    command=self._refrescar_arbol).pack(side="left", padx=4)
+        ttk.Button(barra, text="Servidor", command=self._configurar_servidor).pack(side="left", padx=4)
 
         self.lbl_estado = ttk.Label(barra, text="", font=("Segoe UI", 9, "italic"))
         self.lbl_estado.pack(side="right", padx=4)
@@ -146,16 +149,20 @@ class AppBlockchain(tk.Tk):
 
         # el minado corre en un hilo aparte para no congelar la ventana; el resultado
         # se recoge después con la cola en _revisar_cola_minado
-        hilo = threading.Thread(target=self._minar_en_hilo, daemon=True)
+        # El trabajador recibe solo el cliente y la cola, nunca la ventana Tk.
+        # Así tampoco retiene el intérprete Tcl si se cierra la GUI al minar.
+        hilo = threading.Thread(target=AppBlockchain._minar_en_hilo,
+                                args=(self.cliente, self.cola_minado), daemon=True)
         hilo.start()
         self.after(100, self._revisar_cola_minado)
 
-    def _minar_en_hilo(self):
+    @staticmethod
+    def _minar_en_hilo(cliente, cola_minado):
         try:
-            self.cliente.solicitar("MINAR_BLOQUE")
-            self.cola_minado.put(None)
+            cliente.solicitar("MINAR_BLOQUE")
+            cola_minado.put(None)
         except (OSError, ValueError) as error:
-            self.cola_minado.put(error)
+            cola_minado.put(error)
 
     def _revisar_cola_minado(self):
         try:
@@ -172,6 +179,27 @@ class AppBlockchain(tk.Tk):
         self._refrescar_arbol()
         self._actualizar_estado_bloque_propuesto()
     # ------------------------------------------------------------- Ajustes
+    def _configurar_servidor(self):
+        if self.minando:
+            return
+        direccion = simpledialog.askstring(
+            'Conectar a servidor', 'IP o nombre del servidor y puerto (HOST:PUERTO):',
+            initialvalue=f'{self.cliente.host}:{self.cliente.puerto}')
+        if direccion is None:
+            return
+        try:
+            host, separador, puerto = direccion.strip().rpartition(':')
+            if not host or not separador:
+                raise ValueError('Usa HOST:PUERTO, por ejemplo 127.0.0.1:7001.')
+            puerto = puerto_cliente(puerto)
+            Cliente(host, puerto, timeout=3).solicitar('VER_CADENA')
+        except (OSError, ValueError, argparse.ArgumentTypeError) as error:
+            messagebox.showerror('No se pudo conectar', str(error))
+            return
+        self.cliente = Cliente(host, puerto)
+        self.title(f'Blockchain de Incidentes — {host}:{puerto}')
+        self._refrescar_arbol()
+
     def _cambiar_dificultad(self):
         if self.minando:
             return
@@ -286,8 +314,10 @@ class AppBlockchain(tk.Tk):
         self.txt_detalle.config(state="disabled")
 
 
-def main():
-    app = AppBlockchain()
+def main(argv=None):
+    parser = argumentos_cliente(argparse.ArgumentParser(description='GUI cliente de Blockchain.'))
+    args = parser.parse_args(argv)
+    app = AppBlockchain(Cliente(args.host, args.puerto))
     app.mainloop()
 
 

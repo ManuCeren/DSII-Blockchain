@@ -1,3 +1,5 @@
 clave_secreta.key
 __pycache__/
 *.pyc
+blockchain_*.json
+blockchain_*.json.*.tmp

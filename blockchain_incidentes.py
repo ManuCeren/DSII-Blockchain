@@ -35,11 +35,13 @@ def imprimir_cadena(bc, encriptador):
             print(f"        Reportado por: {t.reportado_por(encriptador)}")
 
 
-def main():
+def main(argv=None):
     """Conserva el menú original; todas las operaciones se envían al servidor."""
     import json
-    from cliente.cliente import Cliente
-    cliente = Cliente()
+    import argparse
+    from cliente.cliente import Cliente, argumentos_cliente
+    args = argumentos_cliente(argparse.ArgumentParser(description='Consola cliente TCP.')).parse_args(argv)
+    cliente = Cliente(args.host, args.puerto)
     while True:
         opcion = mostrar_menu()
         try:
