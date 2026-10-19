@@ -327,3 +327,153 @@ Tkinter necesita un escritorio disponible para sus pruebas de integración.
   entre dos procesos configurados incorrectamente para usar el mismo archivo.
 - Solo se persisten bloques confirmados; los propuestos y recuperados de ramas
   descartadas siguen en memoria hasta minarse. La GUI requiere un nodo iniciado.
+
+# Administrador gráfico de red: registro persistente y malla automática
+
+Desde la raíz del proyecto:
+
+```powershell
+python -m interfaz.gui_administrador
+```
+
+Acepta `--datos DIRECTORIO` y `--clave ARCHIVO`. Para separar una demostración de
+las cadenas actuales, utiliza siempre el mismo directorio al volver a abrir:
+
+```powershell
+python -m interfaz.gui_administrador --datos datos_demo
+```
+
+Cada servidor sigue siendo un proceso independiente de `python -m servidor.servidor`.
+La GUI no intermedia bloques: los servidores se comunican directamente mediante
+JSON sobre sockets TCP/IP, con su propagación, sincronización y consenso existentes.
+
+## Registro, identidad y puertos
+
+Hay dos persistencias diferentes:
+
+- `blockchain_PUERTO.json`: cadena local de cada servidor, con su persistencia
+  atómica existente. El administrador no lee otras cadenas para sincronizar nodos.
+- `red_nodos.json`: registro administrativo versionado de nombre, host, puerto,
+  dificultad inicial y vecinos adicionales opcionales de la API. **No es la
+  blockchain**. No contiene procesos, tokens, bloques ni estados temporales.
+
+El registro se escribe mediante archivo temporal y reemplazo atómico. Si está
+corrupto, se informa del error y se conserva el original, sin reemplazarlo por
+un registro vacío. Se guarda en `--datos`, junto a los JSON individuales.
+
+La identidad técnica es `(HOST, PUERTO)`, independiente del nombre. Se conserva
+además la restricción de puerto único dentro del administrador porque los JSON
+existentes se identifican por puerto. La API anterior que recibe un puerto sigue
+resolviendo el nodo correspondiente.
+
+La GUI sugiere el primer puerto libre de 7000 a 8000, omitiendo los registrados
+(incluso detenidos) y comprobando disponibilidad con un socket local. Puedes
+escribir otro puerto o pulsar **Buscar siguiente puerto**. Se valida otra vez al
+registrar e iniciar; si otro proceso ocupa el puerto en ese intervalo, se informa
+del fallo y el nodo queda registrado, detenido y disponible para reintentar.
+La IP de escucha debe ser local. `0.0.0.0` se traduce a `127.0.0.1` para conectar
+entre los procesos locales administrados.
+
+## Vecinos automáticos y procesos activos
+
+Cada nodo conoce a todos los demás registrados, excluyéndose a sí mismo. Los
+nodos detenidos también forman parte de la configuración deseada; sus errores
+de conexión son esperables hasta que se inicien. No hay un límite de tres nodos.
+
+Al registrar otro nodo se guarda primero la configuración y se actualizan los
+vecinos reales de los procesos activos mediante `CONFIGURAR_VECINOS`, una operación
+administrativa del mismo protocolo TCP/JSON. Esta operación exige un token temporal
+por proceso, transmitido al hijo mediante su entorno; no se persiste en el registro.
+Los servidores manuales no habilitan esta operación por defecto.
+
+La actualización reemplaza la lista de vecinos sin reiniciar ni tocar blockchain,
+bloque propuesto, nonce, dificultad o consenso. Si un recorrido de red ya estaba en
+curso puede terminar con su lista anterior; los siguientes usan la nueva. Se activa
+el trabajador de red si el nodo había arrancado sin vecinos y se pide sincronización.
+La configuración aplicada solo se actualiza en el administrador tras recibir la
+confirmación real del servidor. Si falla, la ventana señala el error pendiente;
+**Reintentar conexiones** vuelve a aplicar la malla. Al crear o iniciar otro nodo
+también se reintentan esas actualizaciones.
+
+Se mantiene la creación manual original y su topología explícita:
+
+```powershell
+python -m servidor.servidor --puerto 7000 --nodo 127.0.0.1:7001
+```
+
+Los servidores externos no se registran ni se administran automáticamente. La API
+Python aún acepta vecinos adicionales para conservar compatibilidad; el flujo
+normal de la GUI no requiere escribir vecinos.
+
+## Demostración con tres nodos
+
+1. Introduce nombre, IP `127.0.0.1`, puerto `7000` y dificultad `1`. Pulsa
+   **Crear servidor**. Se registra, inicia y abre su ventana individual.
+2. Repite con `7001` y `7002`, sin escribir vecinos. Si están libres, la GUI los
+   sugerirá en ese orden. Las tres ventanas deben mostrar los otros dos vecinos.
+   Para agregar un cuarto o quinto nodo, repite con `7003` y `7004` o acepta el
+   siguiente disponible. No hay puertos ni cantidades hardcodeados para la malla.
+3. Selecciona `7000` y pulsa **Abrir cliente de incidentes**. También puedes usar
+   `python -m interfaz.gui_incidentes --puerto 7000`. El botón **Servidor** del
+   cliente permite escribir cualquier dirección TCP.
+4. Agrega un incidente y pulsa **Minar bloque propuesto**. Espera a que termine.
+5. Observa el nuevo bloque y el mismo hash en las ventanas de `7001` y `7002`.
+   Selecciona bloques e incidentes para ver sus detalles.
+6. Detén `7002` con **Detener servidor** y mina otro incidente en `7000`.
+7. Selecciona `7002` y pulsa **Iniciar servidor**. Cargará su JSON y se pondrá al
+   día mediante TCP con sus vecinos. **Reiniciar servidor** realiza parada e inicio
+   con su configuración registrada, independientemente del formulario de creación.
+
+Los puertos 7000, 7001 y 7002 son solo ejemplos; si están ocupados utiliza otros.
+En un JSON existente prevalece su dificultad guardada sobre la dificultad inicial.
+Los estados distinguen **DETENIDO**, **ACTIVO**, **NO DISPONIBLE** y proceso
+**FINALIZADO**; tener un registro no implica tener un proceso activo.
+
+## Cerrar, recuperar y eliminar
+
+1. Cierra normalmente el administrador: recoge únicamente los procesos de
+   servidores y clientes que él abrió, conservando todos los JSON.
+2. Ejecuta otra vez el mismo comando y `--datos`/`--clave` si los especificaste.
+3. La tabla recupera los nombres y direcciones de `red_nodos.json`, inicialmente
+   **DETENIDOS**. Abrir la GUI no inicia ningún proceso.
+4. Selecciona cada fila y pulsa **Iniciar servidor**. Se reconstruyen sus vecinos,
+   se recupera su cadena local y se sincroniza mediante TCP/IP.
+
+**Eliminar nodo** requiere detenerlo primero. Elimina solo la entrada del registro
+administrativo y actualiza los vecinos de los demás servidores; nunca borra
+`blockchain_PUERTO.json`. Si lo registras de nuevo con ese puerto, recupera su cadena.
+
+## Límites y verificación
+
+- Todos los nodos de una red deben compartir la clave Fernet original. No elimines
+  ni sustituyas esa clave al recuperar cadenas. La primera instancia nueva la crea
+  mediante el comportamiento del servidor existente si corresponde.
+- Solo se persisten bloques confirmados. Los incidentes pendientes se conservan
+  durante las actualizaciones automáticas de vecinos, pero una parada o reinicio
+  explícitos descartan el bloque propuesto en memoria. Termina el minado antes de parar.
+- La parada de procesos en Windows usa terminación y espera del hijo; no es una
+  parada cooperativa del protocolo. Un cierre forzado del administrador por el sistema
+  no ejecuta la limpieza de la GUI.
+- Usa una sola instancia de administrador por directorio de datos. El registro no
+  coordina escrituras de varios administradores ni adopta procesos de sesiones previas.
+- La comprobación de puerto y el arranque no son atómicos. Los errores se muestran
+  sin detener otros servidores; el registro permite volver a intentar el inicio.
+- La creación/inicio espera brevemente la confirmación TCP y puede pausar la GUI
+  durante ese arranque. Las consultas periódicas de blockchain usan trabajadores.
+- La malla completa requiere N(N-1) relaciones y tiene coste creciente. El rango
+  7000-8000 y los recursos de la máquina limitan el número de procesos.
+- Los registros `nodo_PUERTO.log` y los errores de la última sincronización no
+  representan un historial completo ni una comprobación instantánea de cada vecino.
+
+`.gitignore` excluye las cadenas locales, `red_nodos.json`, temporales y logs.
+No se han eliminado los archivos de datos existentes.
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
+Se conservan las pruebas anteriores y se agregan pruebas de registro vacío,
+recarga detenida, asignación de puertos, guardado atómico, corrupción, cinco nodos
+sin vecinos manuales, malla real, autorización administrativa, incidentes pendientes,
+propagación, reinicio, eliminación sin borrar cadenas y reconstrucción de la GUI.
+La salida completa de validación está en `pruebas_administracion.txt`.

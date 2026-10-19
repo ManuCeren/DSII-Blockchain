@@ -32,14 +32,36 @@ class RedNodos:
         self._cola = queue.Queue()
         self._detenido = threading.Event()
         self._hilo = None
+        self._config_lock = threading.Lock()
         self._sync_lock = threading.Lock()
         self.ultimo_resultado = {'actualizada': False, 'errores': []}
 
     def iniciar(self):
-        if self.nodos and self._hilo is None:
-            self._hilo = threading.Thread(target=self._trabajar, daemon=True,
-                                          name=f'nodos-{self.direccion[1]}')
-            self._hilo.start()
+        with self._config_lock:
+            if self.nodos and self._hilo is None and not self._detenido.is_set():
+                self._hilo = threading.Thread(target=self._trabajar, daemon=True,
+                                              name=f'nodos-{self.direccion[1]}')
+                self._hilo.start()
+
+    def configurar_vecinos(self, nodos):
+        """Reemplaza la colección completa; los recorridos en curso usan su copia previa."""
+        if not isinstance(nodos, list):
+            raise ValueError('Los vecinos deben ser una lista de direcciones.')
+        nuevos = []
+        for nodo in nodos:
+            if (not isinstance(nodo, (list, tuple)) or len(nodo) != 2
+                    or not isinstance(nodo[0], str) or not nodo[0].strip()
+                    or type(nodo[1]) is not int or not 1 <= nodo[1] <= 65535):
+                raise ValueError('Dirección de nodo inválida.')
+            direccion = tuple(nodo)
+            if direccion != self.direccion and direccion not in nuevos:
+                nuevos.append(direccion)
+        with self._config_lock:
+            self.nodos = nuevos
+        self.iniciar()
+        self.pedir_sincronizacion()
+        log.info('Vecinos actualizados: %s', nuevos)
+        return self.estado()
 
     def detener(self):
         self._detenido.set()

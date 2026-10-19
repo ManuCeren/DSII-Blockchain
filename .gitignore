@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 blockchain_*.json
 blockchain_*.json.*.tmp
+red_nodos.json
+red_nodos.json.*.tmp
+nodo_*.log

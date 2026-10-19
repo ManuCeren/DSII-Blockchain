@@ -285,6 +285,7 @@ class AppBlockchain(tk.Tk):
                 f"Hash anterior: {bloque.hash_anterior}\n"
                 f"Hash: {bloque.hash}\n"
                 f"Nonce: {bloque.nonce}\n"
+                f"Timestamp: {bloque.timestamp}\n"
                 f"Transacciones: {len(bloque.transacciones)}\n"
             )
         else:

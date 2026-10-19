@@ -1,6 +1,8 @@
 """Servidor TCP de incidentes: estado local, persistencia y enlace con otros nodos."""
 import argparse
 import logging
+import os
+import secrets
 from pathlib import Path
 import socket
 import socketserver
@@ -193,11 +195,13 @@ class ServidorBlockchain(socketserver.ThreadingTCPServer):
     address_family = socket.AF_INET
 
     def __init__(self, direccion=('127.0.0.1', 7000), dificultad=4, archivo_clave=None,
-                 *, nodos=(), directorio_datos=None, intervalo=5, timeout_nodos=2):
+                 *, nodos=(), directorio_datos=None, intervalo=5, timeout_nodos=2,
+                 token_administracion=None):
         # Puerto 0 (asignado por el SO) se permite en esta API para las pruebas.
         # La CLI valida el rango académico 7000–8000.
         super().__init__(direccion, _Manejador, bind_and_activate=False)
         self.red = None
+        self._token_administracion = token_administracion
         try:
             self.server_bind()
             directorio = Path(directorio_datos) if directorio_datos is not None else (
@@ -213,6 +217,13 @@ class ServidorBlockchain(socketserver.ThreadingTCPServer):
 
     def procesar(self, solicitud):
         operacion = solicitud.get('operacion')
+        if operacion == 'CONFIGURAR_VECINOS':
+            datos = solicitud.get('datos')
+            token = datos.get('token') if isinstance(datos, dict) else None
+            if (not self._token_administracion or not isinstance(token, str)
+                    or not secrets.compare_digest(token, self._token_administracion)):
+                raise ValueError('Administración de vecinos no autorizada.')
+            return self.red.configurar_vecinos(datos.get('nodos'))
         if operacion == 'SINCRONIZAR':
             return self.red.sincronizar()
         if operacion == 'VER_NODOS':
@@ -277,7 +288,8 @@ def configurar_argumentos(parser):
 def ejecutar_desde_argumentos(args):
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     with ServidorBlockchain((args.host, args.puerto), args.dificultad, args.clave,
-                            nodos=args.nodo, directorio_datos=args.datos) as servidor:
+                            nodos=args.nodo, directorio_datos=args.datos,
+                            token_administracion=os.environ.get('BLOCKCHAIN_ADMIN_TOKEN')) as servidor:
         log.info('Nodo TCP %s:%s; persistencia: %s', *servidor.server_address,
                  servidor.servicio.almacen.ruta)
         try:

@@ -1,0 +1,293 @@
+test_cinco_procesos_puerto_ocupado_reinicio_y_cierre (test_administracion.PruebasAdministrador.test_cinco_procesos_puerto_ocupado_reinicio_y_cierre) ... ok
+test_gui_crea_consulta_muestra_bloque_y_cierra_proceso (test_administracion.PruebasAdministrador.test_gui_crea_consulta_muestra_bloque_y_cierra_proceso) ... ok
+test_validacion_y_vecinos_variables (test_administracion.PruebasAdministrador.test_validacion_y_vecinos_variables) ... ok
+test_bloque_minado_rechaza_transacciones_y_reminado (test_blockchain.PruebasBlockchain.test_bloque_minado_rechaza_transacciones_y_reminado) ... ok
+test_cifrado_descifrado_y_reutilizacion_de_clave (test_blockchain.PruebasBlockchain.test_cifrado_descifrado_y_reutilizacion_de_clave) ... ok
+test_genesis_automatico_y_sha256 (test_blockchain.PruebasBlockchain.test_genesis_automatico_y_sha256) ... ok
+test_solo_objetos_incidente (test_blockchain.PruebasBlockchain.test_solo_objetos_incidente) ... ok
+test_varias_transacciones_minado_y_encadenamiento (test_blockchain.PruebasBlockchain.test_varias_transacciones_minado_y_encadenamiento) ... ok
+test_clientes_concurrentes (test_comunicacion.PruebasComunicacion.test_clientes_concurrentes) ... ok
+test_delimitacion_y_limite (test_comunicacion.PruebasComunicacion.test_delimitacion_y_limite) ... ok
+test_errores_y_cambio_de_dificultad (test_comunicacion.PruebasComunicacion.test_errores_y_cambio_de_dificultad) ... ok
+test_flujo_completo_tcp_json_y_detalles (test_comunicacion.PruebasComunicacion.test_flujo_completo_tcp_json_y_detalles) ... ok
+test_json_fragmentado_en_tcp (test_comunicacion.PruebasComunicacion.test_json_fragmentado_en_tcp) ... ok
+test_json_invalido_no_detiene_servidor (test_comunicacion.PruebasComunicacion.test_json_invalido_no_detiene_servidor) ... ok
+test_cliente_y_puntos_de_entrada_reciben_host_y_puerto (test_configuracion.PruebasConfiguracion.test_cliente_y_puntos_de_entrada_reciben_host_y_puerto) ... ok
+test_servidor_configura_puerto_nodos_y_valida_rango (test_configuracion.PruebasConfiguracion.test_servidor_configura_puerto_nodos_y_valida_rango) ... ok
+test_boton_servidor_cambia_la_conexion_y_refresca_la_cadena (test_configuracion.PruebasConfiguracionGUI.test_boton_servidor_cambia_la_conexion_y_refresca_la_cadena) ... ok
+test_formulario_minado_vistas_y_detalle (test_interfaz.PruebasInterfaz.test_formulario_minado_vistas_y_detalle) ... ok
+test_acepta_bloque_sin_reminarlo_y_no_propaga_duplicados (test_nodos.PruebasNodos.test_acepta_bloque_sin_reminarlo_y_no_propaga_duplicados) ... ok
+test_cadena_invalida_o_genesis_distinto_nunca_reemplazan_la_local (test_nodos.PruebasNodos.test_cadena_invalida_o_genesis_distinto_nunca_reemplazan_la_local) ... ok
+test_consenso_resuelve_ramas_y_conserva_incidentes_pendientes (test_nodos.PruebasNodos.test_consenso_resuelve_ramas_y_conserva_incidentes_pendientes) ... ok
+test_nodo_apagado_se_pone_al_dia_y_todos_persisten_al_reiniciar (test_nodos.PruebasNodos.test_nodo_apagado_se_pone_al_dia_y_todos_persisten_al_reiniciar) ... ok
+test_nodo_inaccesible_no_impide_minar_ni_responder (test_nodos.PruebasNodos.test_nodo_inaccesible_no_impide_minar_ni_responder) ... ok
+test_rechaza_hash_pow_numero_padre_y_transacciones_invalidos (test_nodos.PruebasNodos.test_rechaza_hash_pow_numero_padre_y_transacciones_invalidos) ... ok
+test_sincronizacion_manual_entre_dos_nodos (test_nodos.PruebasNodos.test_sincronizacion_manual_entre_dos_nodos) ... ok
+test_tres_nodos_propagan_en_ciclo_sin_bucle_infinito (test_nodos.PruebasNodos.test_tres_nodos_propagan_en_ciclo_sin_bucle_infinito) ... ok
+test_archivo_corrupto_no_se_sustituye_por_genesis (test_persistencia.PruebasPersistencia.test_archivo_corrupto_no_se_sustituye_por_genesis) ... ok
+test_clave_incorrecta_o_ausente_impide_cargar_incidentes (test_persistencia.PruebasPersistencia.test_clave_incorrecta_o_ausente_impide_cargar_incidentes) ... ok
+test_fallo_de_disco_no_confirma_ni_pierde_propuesto (test_persistencia.PruebasPersistencia.test_fallo_de_disco_no_confirma_ni_pierde_propuesto) ... ok
+test_guarda_genesis_inmediatamente_y_reinicia_sin_minar (test_persistencia.PruebasPersistencia.test_guarda_genesis_inmediatamente_y_reinicia_sin_minar) ... ok
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=418)
+Hash: 00d2da97477d0d6fcee40e2023adaf648e8550ac80771256e374106fd01f1862
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=39)
+Hash: 00f975de0ded739c98043587048fec0ddc22412fe843d433abe4bfbae6e4a4b1
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=48)
+Hash: 0041ab1305057b4449cb70f4246c23a1131aff560e8d7902950a1e49f0b7d895
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=0)
+Hash: 030e88c9b46a85840059ad7809b9d9c46e929521ef599a9e8d7be685cd802ab5
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=2)
+Hash: 0e48c4f9cdcab180d313cb2d20172fbf8f7549e8b60b2f8df8041665ceb35ea9
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=28)
+Hash: 0e9e5428f1e9459f0305cf9c59c118bbd714b448ac609d27aa609b9e9229eb00
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=2)
+Hash: 0b6be8e0153ddcdf42fc6be6e68c4802ee9008183272732a98c502f77d71439c
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=15)
+Hash: 0ab53769d09064030c48b65566e4336eee0aaff537be392adda19839ca7243a4
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=18)
+Hash: 068bec58e61a5d5c1e002c77c6aa42620966a13dbfb8dcc8f7572b9b0ca73cfa
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=6)
+Hash: 06f41cb8c20b90515c487e9390a3bc1f7efc2af156043a11fb7c73dbf5c66ca1
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=9)
+Hash: 08fa8337640a2916c7db9f7201bcb8c2591e136599a93b4676f9f8acdd67bcf6
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=34)
+Hash: 0cba45a2f0c508c5b41923d37dfa333c36927db45cf37defd5a7e79226199e63
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=7)
+Hash: 053132461a9a2531fd333f27343345d49812ba0db0854531fcdbc6e1d7c55afd
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=9)
+Hash: 0d25548caf3f36614e3f5a1042446fc55bbe6eb35a1898e35f2fc12314e041e8
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=13)
+Hash: 0da57115012c92b8d966c6b17f7d1bcaf1566eda3ce8bd243a45fcd687bf096a
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=13)
+Hash: 0e5566b8cfabdb8c82cd1a1892efacae588b998339e162f1fedb7b09308c0692
+Minando bloque #3...
+Bloque #3 minado en 0.00s (nonce=17)
+Hash: 02c72860d4fc2ea4d2eb6df7c18c29d031dcadcd00193388161d6d23f6878be5
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=9)
+Hash: 043e762b5867378d856223c14b85fa1b1bbde2e96d920fb1e737e5ce3744376d
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=9)
+Hash: 0dbf51fc29b2fc3bac76d2dd04634fbb13c63393873f1a1988232b891ae2893f
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=16)
+Hash: 0890076b899dd385fdcc47203680933b1b0d84e5d347ea73017164228f516d10
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=1)
+Hash: 091c338a1ee598f713a00a193afa449bdbe54457d1b144596888b9a479b8d1ec
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=41)
+Hash: 07f9f89421ef991573805e9332de068821049847568497e9e86d1fe9b20dfd8d
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=41)
+Hash: 07f9f89421ef991573805e9332de068821049847568497e9e86d1fe9b20dfd8d
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=14)
+Hash: 025fb5344606a3fc5e8cdcd8e7d251c6d143a77b5ef99adb4a5f2d0962a1ca9a
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=21)
+Hash: 00f9d6418e708f79b122359da01145152efe56e59b3bf96c0c5439ea22bf2a4f
+Minando bloque #3...
+test_persistencia_completa_cifrada_y_descifrado_despues_de_reinicio (test_persistencia.PruebasPersistencia.test_persistencia_completa_cifrada_y_descifrado_despues_de_reinicio) ... ok
+test_tres_procesos_sincronizan_recuperan_nodo_y_reinician (test_procesos.PruebasProcesos.test_tres_procesos_sincronizan_recuperan_nodo_y_reinician) ... ok
+test_actualizacion_fallida_conserva_vecinos_reales_y_permite_reintentar (test_registro_red.PruebasRegistroRed.test_actualizacion_fallida_conserva_vecinos_reales_y_permite_reintentar) ... ok
+test_busca_primer_puerto_omite_ocupado_registrado_y_detecta_agotamiento (test_registro_red.PruebasRegistroRed.test_busca_primer_puerto_omite_ocupado_registrado_y_detecta_agotamiento) ... ok
+test_gui_recupera_tabla_sin_iniciar_procesos (test_registro_red.PruebasRegistroRed.test_gui_recupera_tabla_sin_iniciar_procesos) ... ok
+test_malla_cinco_procesos_sin_vecinos_manuales_conserva_proceso_y_pendientes (test_registro_red.PruebasRegistroRed.test_malla_cinco_procesos_sin_vecinos_manuales_conserva_proceso_y_pendientes) ... ok
+test_registro_corrupto_y_fallo_guardado_no_destruyen_configuracion (test_registro_red.PruebasRegistroRed.test_registro_corrupto_y_fallo_guardado_no_destruyen_configuracion) ... ok
+test_registro_vacio_cinco_nodos_detenidos_y_recarga (test_registro_red.PruebasRegistroRed.test_registro_vacio_cinco_nodos_detenidos_y_recarga) ... ok
+test_reinicio_explicito_conserva_cadena_y_falta_clave_no_genera_otra (test_registro_red.PruebasRegistroRed.test_reinicio_explicito_conserva_cadena_y_falta_clave_no_genera_otra) ... ok
+test_servidor_manual_no_habilita_administracion (test_registro_red.PruebasRegistroRed.test_servidor_manual_no_habilita_administracion) ... ok
+test_genesis_compartido_y_consenso_por_trabajo_no_por_longitud (test_validacion.PruebasValidacion.test_genesis_compartido_y_consenso_por_trabajo_no_por_longitud) ... ok
+test_rechaza_alteraciones_estructurales_y_de_integridad (test_validacion.PruebasValidacion.test_rechaza_alteraciones_estructurales_y_de_integridad) ... ok
+test_rechaza_ids_duplicados_incluso_con_hash_y_pow_validos (test_validacion.PruebasValidacion.test_rechaza_ids_duplicados_incluso_con_hash_y_pow_validos) ... ok
+test_rechaza_pow_invalida_aunque_el_hash_coincida (test_validacion.PruebasValidacion.test_rechaza_pow_invalida_aunque_el_hash_coincida) ... ok
+test_valida_y_reconstruye_sin_cambiar_ningun_campo (test_validacion.PruebasValidacion.test_valida_y_reconstruye_sin_cambiar_ningun_campo) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 30.056s
+
+OK
+Bloque #3 minado en 0.00s (nonce=203)
+Hash: 0059648a02a7b8886c63e7572381cca274297c654c1801e07544a46f3092f78e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=0)
+Hash: 9feadd9c0e2e57b949c4db55c1f7854940b228a769e08a5515d33ced514b805f
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=15)
+Hash: 0dd214f3099020cf4e2598e4f6ea733b265fd724c58442bc55c3fbe82608bfc8
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #2...
+Bloque #2 minado en 0.01s (nonce=228)
+Hash: 002ecb800beb98db747addf868523dea9fb28fe0b1d62828c654f5966985195d
+Minando bloque #2...
+Bloque #2 minado en 0.00s (nonce=0)
+Hash: 416ff12f6404046928149ac1a0988b9e78e8cc4c8f3024d80cf481ea08139ca6
+Minando bloque #3...
+Bloque #3 minado en 0.00s (nonce=0)
+Hash: c807c46e198a84127855b0616698d7b7f55fac979dc57bcd6d8b53c0c351c26c
+Minando bloque #4...
+Bloque #4 minado en 0.00s (nonce=0)
+Hash: 058d5c50d927505f410c29e77c07b9fbad4ec04bf22b1ecd406c9a3f3408688b
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=228)
+Hash: 00a8a7db949b474f1a9de4d38a08bd4cab9589dd72ebf7ff061d22e80a034d5e
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=19)
+Hash: 07491f75d13d1b161ad25d957e891e5b8f3e21e18eeaf0953f0844ef8ff211a8
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=0)
+Hash: 0e2a42049a7ab63054903e2bcce98b2854c42d54285d7d3441c1d28d767e92d2
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=35)
+Hash: 0a48d7386f36ffe03b56bf2649262b3d5ae80fb67cae8915396bf76a7cc38e1c
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=11)
+Hash: 0849068787d57b35bcae355a354bee7904a223212dcfec7fd986791c9218e7f7
+Minando bloque #0...
+Bloque #0 minado en 0.00s (nonce=2)
+Hash: 0cf46dc2b1cc8dbb12cf6f20940732b7e99e7122893a0ff495a30d8a07cc80cc
+Minando bloque #1...
+Bloque #1 minado en 0.00s (nonce=14)
+Hash: 0b38eb405813a0f046d83f361f7ce26c09d7b3aa64239c5b4ef491eb7bb25493
