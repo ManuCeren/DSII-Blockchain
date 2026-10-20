@@ -23,7 +23,7 @@ class PruebasNodos(PruebaConNodos):
                 self.assertEqual(cliente.solicitar('RECIBIR_BLOQUE', {'bloque': bloque})['estado'], 'duplicado')
                 self.assertEqual(propagar.call_count, 1)
         self.assertEqual(self.cadena(destino), self.cadena(origen))
-        disco = json.loads(destino.servicio.almacen.ruta.read_text(encoding='utf-8'))
+        disco = destino.servicio.almacen.cargar().to_dict()
         self.assertEqual(disco['cadena'][-1], bloque)
 
     def test_rechaza_hash_pow_numero_padre_y_transacciones_invalidos(self):
@@ -64,7 +64,7 @@ class PruebasNodos(PruebaConNodos):
         self.minar(origen)
         self.cliente(destino).solicitar('SINCRONIZAR')
         self.assertEqual(self.cadena(destino), self.cadena(origen))
-        disco = json.loads(destino.servicio.almacen.ruta.read_text(encoding='utf-8'))
+        disco = destino.servicio.almacen.cargar().to_dict()
         self.assertEqual(disco['cadena'], self.cadena(origen)['cadena'])
         estado = self.cliente(destino).solicitar('VER_NODOS')
         self.assertEqual(estado['nodos'], [list(origen.server_address)])
@@ -128,7 +128,7 @@ class PruebasNodos(PruebaConNodos):
         self.minar(a)
         self.esperar(lambda: self.cadena(b) == self.cadena(a))
         self.assertEqual(ruta_c.read_bytes(), viejo)
-        nuevo_c = self.crear_nodo(puerto=c.server_address[1], directorio=ruta_c.parent,
+        nuevo_c = self.crear_nodo(puerto=c.server_address[1], directorio=ruta_c.parent.parent,
                                  nodos=[a.server_address, b.server_address])
         self.esperar(lambda: self.cadena(nuevo_c) == self.cadena(a))
         esperado = self.cadena(a)
@@ -138,7 +138,7 @@ class PruebasNodos(PruebaConNodos):
         with patch.object(Blockchain, '_crear_bloque_genesis', side_effect=AssertionError('No recrear Génesis')):
             for nodo in actuales:
                 nuevo = self.crear_nodo(puerto=nodo.server_address[1],
-                                        directorio=nodo.servicio.almacen.ruta.parent)
+                                        directorio=nodo.servicio.almacen.directorio.parent)
                 self.assertEqual(self.cadena(nuevo), esperado)
 
     def test_consenso_resuelve_ramas_y_conserva_incidentes_pendientes(self):

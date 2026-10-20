@@ -78,7 +78,7 @@ class RedNodos:
             self._cola.put(('sincronizar', None, None))
 
     def _cliente(self, nodo):
-        return Cliente(*nodo, timeout=self.timeout)
+        return Cliente(*nodo, timeout=self.timeout, contexto="nodos")
 
     def sincronizar(self):
         actualizada = False

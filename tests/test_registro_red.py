@@ -89,7 +89,7 @@ class PruebasRegistroRed(unittest.TestCase):
         primero = self.gestor.crear(ConfiguracionNodo('Primero', '127.0.0.1', self.gestor.siguiente_puerto(), dificultad=0))
         identidad = primero.configuracion.identidad
         proceso = primero.proceso
-        cliente = Cliente(*identidad, timeout=3)
+        cliente = Cliente(*identidad, timeout=3, contexto="nodos")
         cliente.solicitar('AGREGAR_INCIDENTE', dict(tipo='Malware', descripcion='Pendiente conservado', reportado_por='Ana', severidad='Alta'))
         for i in range(4):
             self.gestor.crear(ConfiguracionNodo(f'Nodo {i + 2}', '127.0.0.1', self.gestor.siguiente_puerto(), dificultad=0))
@@ -97,7 +97,7 @@ class PruebasRegistroRed(unittest.TestCase):
             self.assertIsNone(proceso.poll())
             self.assertEqual(len(cliente.solicitar('VER_BLOQUE_PROPUESTO')['transacciones']), 1)
             for clave, nodo in self.gestor.nodos.items():
-                reales = {tuple(v) for v in Cliente(*clave, timeout=2).solicitar('VER_NODOS')['nodos']}
+                reales = {tuple(v) for v in Cliente(*clave, timeout=2, contexto="nodos").solicitar('VER_NODOS')['nodos']}
                 self.assertEqual(reales, set(self.gestor.nodos) - {clave})
                 self.assertEqual(reales, set(nodo.configuracion.vecinos))
         # La operación administrativa rechaza tokens ausentes o incorrectos.
@@ -128,13 +128,13 @@ class PruebasRegistroRed(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Detén'):
             cargado.eliminar(ultimo)
         cargado.detener(ultimo)
-        archivo = self.datos / f'blockchain_{ultimo[1]}.json'
+        archivo = self.datos / f'nodo_{ultimo[1]}' / 'indice.json'
         antes = archivo.read_bytes()
         cargado.eliminar(ultimo)
         self.assertEqual(archivo.read_bytes(), antes)
         self.assertEqual(len(json.loads(cargado.archivo_red.read_text())['nodos']), 4)
         for clave in cargado.nodos:
-            self.assertEqual({tuple(v) for v in Cliente(*clave, timeout=2).solicitar('VER_NODOS')['nodos']}, set(cargado.nodos) - {clave})
+            self.assertEqual({tuple(v) for v in Cliente(*clave, timeout=2, contexto="nodos").solicitar('VER_NODOS')['nodos']}, set(cargado.nodos) - {clave})
 
     def test_actualizacion_fallida_conserva_vecinos_reales_y_permite_reintentar(self):
         primero = self.gestor.crear(ConfiguracionNodo('Nodo', '127.0.0.1', self.gestor.siguiente_puerto(), dificultad=0))
@@ -149,7 +149,7 @@ class PruebasRegistroRed(unittest.TestCase):
     def test_reinicio_explicito_conserva_cadena_y_falta_clave_no_genera_otra(self):
         nodo = self.gestor.crear(ConfiguracionNodo('Nodo', '127.0.0.1', self.gestor.siguiente_puerto(), dificultad=0))
         identidad = nodo.configuracion.identidad
-        cliente = Cliente(*identidad, timeout=3)
+        cliente = Cliente(*identidad, timeout=3, contexto="nodos")
         cliente.solicitar('AGREGAR_INCIDENTE', dict(tipo='Malware', descripcion='Dato persistido', reportado_por='Ana', severidad='Alta'))
         cliente.solicitar('MINAR_BLOQUE')
         cadena = cliente.solicitar('VER_CADENA')
@@ -159,7 +159,7 @@ class PruebasRegistroRed(unittest.TestCase):
         self.assertIsNotNone(proceso_anterior.poll())
         self.assertEqual(cliente.solicitar('VER_CADENA'), cadena)
         self.gestor.detener(identidad)
-        archivo = self.datos / f'blockchain_{identidad[1]}.json'
+        archivo = self.datos / f'nodo_{identidad[1]}' / 'indice.json'
         antes = archivo.read_bytes()
         self.clave.unlink()
         with self.assertRaisesRegex(ValueError, 'No arrancó'):

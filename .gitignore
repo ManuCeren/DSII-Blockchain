@@ -6,3 +6,7 @@ blockchain_*.json.*.tmp
 red_nodos.json
 red_nodos.json.*.tmp
 nodo_*.log
+
+canal_*.key
+nodo_*/
+*.v1.bak

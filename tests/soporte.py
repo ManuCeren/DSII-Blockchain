@@ -49,7 +49,7 @@ class PruebaConNodos(unittest.TestCase):
 
     @staticmethod
     def cliente(nodo):
-        return Cliente(*nodo.server_address, timeout=10)
+        return Cliente(*nodo.server_address, timeout=10, contexto="nodos")
 
     def cadena(self, nodo):
         return self.cliente(nodo).solicitar('VER_CADENA')

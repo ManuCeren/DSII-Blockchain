@@ -7,6 +7,7 @@ import sys
 import time
 
 from cliente.cliente import Cliente
+from servidor.persistencia import AlmacenCadena
 from tests.soporte import PruebaConNodos
 
 
@@ -87,7 +88,7 @@ class PruebasProcesos(PruebaConNodos):
             self.assertEqual(cadena(a), cadena(c))
             minar(a, 2)
             self.esperar(lambda: cadena(a) == cadena(b) == cadena(c), segundos=15)
-            ruta_c = self.directorio / str(c) / f'blockchain_{c}.json'
+            ruta_c = self.directorio / str(c) / f'nodo_{c}' / 'indice.json'
             antes = ruta_c.read_bytes()
             detener(c)
             minar(a, 1)
@@ -97,8 +98,8 @@ class PruebasProcesos(PruebaConNodos):
             self.esperar(lambda: cadena(a) == cadena(b) == cadena(c), segundos=15)
             esperado = cadena(a)
             for puerto in puertos:
-                ruta = self.directorio / str(puerto) / f'blockchain_{puerto}.json'
-                self.assertEqual(json.loads(ruta.read_text(encoding='utf-8'))['cadena'], esperado['cadena'])
+                ruta = self.directorio / str(puerto) / f'nodo_{puerto}' / 'indice.json'
+                self.assertEqual(AlmacenCadena(ruta).cargar().to_dict()['cadena'], esperado['cadena'])
                 detener(puerto)
             for puerto in puertos:
                 iniciar(puerto)

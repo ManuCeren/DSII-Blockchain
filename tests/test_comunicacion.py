@@ -71,7 +71,9 @@ class PruebasComunicacion(unittest.TestCase):
 
     def test_json_fragmentado_en_tcp(self):
         with socket.create_connection(self.servidor.server_address, timeout=10) as conexion:
-            contenido = json.dumps({'operacion': 'VER_CADENA'}).encode() + b'\n'
+            salida = io.BytesIO()
+            enviar_json(salida, {'operacion': 'VER_CADENA'})
+            contenido = salida.getvalue()
             for fragmento in contenido:
                 conexion.sendall(bytes([fragmento]))
             with conexion.makefile('rb') as flujo:

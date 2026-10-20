@@ -132,7 +132,7 @@ class PruebasAdministrador(unittest.TestCase):
                     procesos.append(gestor.nodos[puertos[1]].proceso)
                     esperar(lambda: len(gestor.consultar(puertos[1])[0]['cadena']) == 2)
                     for p in puertos[:5]:
-                        self.assertTrue((Path(temporal) / f'blockchain_{p}.json').exists())
+                        self.assertTrue((Path(temporal) / f'nodo_{p}' / 'indice.json').exists())
                     gestor.cerrar()
                     self.assertTrue(all(p.poll() is not None for p in procesos))
                     self.assertGreater(externo.fileno(), -1)

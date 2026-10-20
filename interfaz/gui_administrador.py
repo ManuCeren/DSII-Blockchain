@@ -18,24 +18,128 @@ class VentanaNodo(tk.Toplevel):
         super().__init__(app)
         self.app, self.puerto = app, puerto
         self.title(f'Nodo Blockchain - {app.gestor.nodos[puerto].configuracion.nombre}')
-        self.geometry('850x720')
-        self.resumen = ttk.Label(self, padding=10, wraplength=810, justify='left')
-        self.resumen.pack(fill='x')
-        self.arbol = ttk.Treeview(self, columns=('hash',), height=9)
+        self.geometry('940x740')
+        self.minsize(800, 640)
+        self.tecnica_visible = False
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+
+        resumen = ttk.LabelFrame(self, text='Resumen del nodo', padding=12)
+        resumen.grid(row=0, column=0, sticky='ew', padx=12, pady=(12, 8))
+        resumen.columnconfigure(0, weight=1)
+        self.nombre = ttk.Label(resumen, font=('TkDefaultFont', 14, 'bold'))
+        self.nombre.grid(row=0, column=0, sticky='w')
+        self.estado = ttk.Label(resumen, font=('TkDefaultFont', 10, 'bold'))
+        self.estado.grid(row=0, column=1, sticky='e', padx=(12, 0))
+        self.direccion = ttk.Label(resumen)
+        self.direccion.grid(row=1, column=0, sticky='w', pady=(4, 8))
+        self.boton_actualizar = ttk.Button(resumen, text='Actualizar', command=self.solicitar_actualizacion)
+        self.boton_actualizar.grid(row=1, column=1, rowspan=2, sticky='e', padx=(12, 0))
+        self.resumen = ttk.Label(resumen)
+        self.resumen.grid(row=2, column=0, sticky='w')
+
+        cuerpo = ttk.Frame(self)
+        cuerpo.grid(row=1, column=0, sticky='nsew', padx=12)
+        cuerpo.rowconfigure(0, weight=1)
+        cuerpo.columnconfigure(0, weight=2)
+        cuerpo.columnconfigure(1, weight=3)
+        cadena = ttk.LabelFrame(cuerpo, text='Cadena de bloques', padding=8)
+        cadena.grid(row=0, column=0, sticky='nsew', padx=(0, 8))
+        cadena.rowconfigure(0, weight=1)
+        cadena.columnconfigure(0, weight=1)
+        self.arbol = ttk.Treeview(cadena, columns=('hash',), height=9)
         self.arbol.heading('#0', text='Bloque / Incidente')
         self.arbol.heading('hash', text='Hash / Tipo')
-        self.arbol.pack(fill='both', expand=True, padx=10)
-        scroll = ttk.Scrollbar(self, command=self.arbol.yview)
-        scroll.pack(side='right', fill='y')
-        self.arbol.configure(yscrollcommand=scroll.set)
+        self.arbol.column('#0', width=170, minwidth=110)
+        self.arbol.column('hash', width=150, minwidth=100)
+        self.arbol.grid(row=0, column=0, sticky='nsew')
+        scroll = ttk.Scrollbar(cadena, command=self.arbol.yview)
+        scroll.grid(row=0, column=1, sticky='ns')
+        horizontal = ttk.Scrollbar(cadena, orient='horizontal', command=self.arbol.xview)
+        horizontal.grid(row=1, column=0, sticky='ew')
+        self.arbol.configure(yscrollcommand=scroll.set, xscrollcommand=horizontal.set)
         self.arbol.bind('<<TreeviewSelect>>', self.detalle)
-        self.texto = tk.Text(self, height=9, wrap='word', state='disabled')
-        self.texto.pack(fill='both', expand=True, padx=10, pady=5)
-        ttk.Label(self, text='Actividad del nodo (consultas y registro del servidor)').pack(anchor='w', padx=10)
-        self.actividad = tk.Text(self, height=7, state='disabled', wrap='word')
-        self.actividad.pack(fill='both', padx=10, pady=5)
+        detalle = ttk.LabelFrame(cuerpo, text='Detalle del bloque / incidente', padding=8)
+        detalle.grid(row=0, column=1, sticky='nsew')
+        self.texto = self.area_texto(detalle, height=9)
+        self.escribir(self.texto, 'Selecciona un bloque o incidente para consultar su detalle.')
+
+        controles = ttk.Frame(self)
+        controles.grid(row=2, column=0, sticky='ew', padx=12, pady=8)
+        self.boton_tecnica = ttk.Button(controles, text='Ver información técnica ▼',
+                                        command=self.alternar_tecnica)
+        self.boton_tecnica.pack(anchor='w')
+        self.informacion_tecnica = ttk.LabelFrame(self, text='Información técnica', padding=8)
+        columnas = ttk.Frame(self.informacion_tecnica)
+        columnas.pack(fill='both', expand=True)
+        columnas.columnconfigure(0, weight=1)
+        columnas.columnconfigure(1, weight=1)
+        columnas.rowconfigure(0, weight=1)
+        conexion = ttk.LabelFrame(columnas, text='Conexión y último bloque', padding=6)
+        conexion.grid(row=0, column=0, sticky='nsew', padx=(0, 8))
+        self.tecnico = self.area_texto(conexion, height=5)
+        sincronizacion = ttk.LabelFrame(columnas, text='Última sincronización', padding=6)
+        sincronizacion.grid(row=0, column=1, sticky='nsew')
+        self.sincronizacion = self.area_texto(sincronizacion, height=5)
+        actividad = ttk.LabelFrame(self.informacion_tecnica,
+                    text='Actividad del nodo (consultas y registro del servidor)', padding=6)
+        actividad.pack(fill='both', expand=True, pady=(8, 0))
+        self.actividad = self.area_texto(actividad, height=5)
         self.items = {}
         self.firma = None
+
+    @staticmethod
+    def area_texto(contenedor, height):
+        contenedor.rowconfigure(0, weight=1)
+        contenedor.columnconfigure(0, weight=1)
+        texto = tk.Text(contenedor, height=height, width=25, wrap='word', state='disabled',
+                        font='TkDefaultFont', padx=6, pady=6, relief='flat')
+        texto.grid(row=0, column=0, sticky='nsew')
+        scroll = ttk.Scrollbar(contenedor, command=texto.yview)
+        scroll.grid(row=0, column=1, sticky='ns')
+        texto.configure(yscrollcommand=scroll.set)
+        return texto
+
+    def alternar_tecnica(self):
+        self.tecnica_visible = not self.tecnica_visible
+        if self.tecnica_visible:
+            self.informacion_tecnica.grid(row=3, column=0, sticky='nsew', padx=12, pady=(0, 12))
+            self.boton_tecnica.configure(text='Ocultar información técnica ▲')
+        else:
+            self.informacion_tecnica.grid_remove()
+            self.boton_tecnica.configure(text='Ver información técnica ▼')
+
+    def solicitar_actualizacion(self):
+        # Compartir la cola y el control de consultas periódicas del administrador.
+        if self.app.cerrando or self.puerto in self.app.ocupados:
+            return
+        self.app.ocupados.add(self.puerto)
+        self.app.trabajar(lambda: self.app.gestor.consultar(self.puerto),
+                          lambda resultado: self.app.recibido(self.puerto, resultado))
+
+    @staticmethod
+    def error_legible(error):
+        texto = str(error)
+        if 'timed out' in texto.lower() or 'timeout' in texto.lower():
+            return 'No respondió (tiempo de espera agotado)'
+        if any(palabra in texto.lower() for palabra in ('refused', 'rechaz', '10061')):
+            return 'No disponible (conexión rechazada)'
+        return texto
+
+    @classmethod
+    def presentar_sincronizacion(cls, red):
+        sincronizacion = red.get('ultima_sincronizacion', {})
+        lineas = ['Estado: ' + ('Cadena actualizada' if sincronizacion.get('actualizada') else 'Sin cambios')]
+        errores = sincronizacion.get('errores', [])
+        por_nodo = {tuple(e['nodo']): e['error'] for e in errores}
+        vecinos = list(dict.fromkeys(tuple(n) for n in red.get('nodos', [])))
+        vecinos.extend(n for n in por_nodo if n not in vecinos)
+        for vecino in vecinos:
+            estado = cls.error_legible(por_nodo[vecino]) if vecino in por_nodo else 'Sin errores reportados'
+            lineas.append(f'Nodo {vecino[0]}:{vecino[1]} — {estado}')
+        if not vecinos:
+            lineas.append('Sin vecinos registrados.')
+        return '\n'.join(lineas)
 
     @staticmethod
     def escribir(widget, texto):
@@ -49,17 +153,22 @@ class VentanaNodo(tk.Toplevel):
     def actualizar(self, resultado=None, error=None):
         nodo = self.app.gestor.nodos[self.puerto]
         c = nodo.configuracion
-        cabecera = f'{c.nombre}\nIP: {c.host}    Puerto: {c.puerto}    Estado: {nodo.estado}\n'
+        self.nombre.configure(text=c.nombre)
+        self.direccion.configure(text=f'{c.host} : {c.puerto}')
+        self.estado.configure(text=f'● {nodo.estado}')
         vecinos = resultado[1]['nodos'] if resultado else c.vecinos
-        cabecera += ('Vecinos actuales: ' if resultado else 'Vecinos configurados (sin consulta actual): ') + (', '.join(f'{h}:{p}' for h, p in vecinos) or 'ninguno')
+        cabecera = ('Vecinos actuales: ' if resultado else 'Vecinos configurados (sin consulta actual): ')
+        cabecera += ', '.join(f'{h}:{p}' for h, p in vecinos) or 'ninguno'
         if nodo.error_topologia:
             cabecera += f'\nConfiguración pendiente/error: {nodo.error_topologia}'
         if resultado:
             cadena, red = resultado
             ultimo = cadena['cadena'][-1]
-            cabecera += (f"\nTCP: disponible | Bloques: {len(cadena['cadena'])} | Dificultad: {cadena['dificultad']}"
-                         f" | Último bloque: {ultimo['numero_bloque']}\nÚltimo hash: {ultimo['hash']}"
-                         f"\nÚltima sincronización: {json.dumps(red['ultima_sincronizacion'], ensure_ascii=False)}")
+            self.resumen.configure(text=f"Bloques: {len(cadena['cadena'])}     "
+                                   f"Dificultad: {cadena['dificultad']}     Vecinos: {len(vecinos)}")
+            cabecera += (f"\nTCP: disponible\nÚltimo bloque: {ultimo['numero_bloque']}"
+                         f"\nÚltimo hash: {ultimo['hash']}")
+            self.escribir(self.sincronizacion, self.presentar_sincronizacion(red))
             firma = json.dumps(resultado, sort_keys=True)
             if firma != self.firma:
                 nodo.eventos.append('Estado TCP actualizado: cadena y última sincronización consultadas.')
@@ -70,20 +179,29 @@ class VentanaNodo(tk.Toplevel):
                 self.arbol.delete(*self.arbol.get_children())
                 self.items.clear()
                 for b in cadena['cadena']:
-                    item = self.arbol.insert('', 'end', text=f"Bloque #{b['numero_bloque']}", values=(b['hash'],))
+                    item = self.arbol.insert('', 'end', text=f"Bloque #{b['numero_bloque']}", values=(b['hash'][:16] + '…',))
                     self.items[item] = ('bloque', b)
                     for t in b['transacciones']:
                         hijo = self.arbol.insert(item, 'end', text=f"Incidente #{t['id_incidente']}", values=(t['tipo'],))
                         self.items[hijo] = ('incidente', (b['numero_bloque'], t['id_incidente']))
-        elif error:
-            cabecera += f'\nTCP: no disponible ({error})'
-        self.resumen.configure(text=cabecera)
+        else:
+            # La cadena retenida sigue visible, pero no se presenta como una consulta actual.
+            self.resumen.configure(text=f'Bloques: —     Dificultad: —     Vecinos: {len(vecinos)}')
+            if error:
+                cabecera += f'\nTCP: no disponible ({self.error_legible(error)})'
+            else:
+                cabecera += '\nTCP: sin consulta actual'
+            self.escribir(self.sincronizacion, 'Sin consulta actual del nodo. Último resultado no disponible.')
+        self.escribir(self.tecnico, cabecera)
         registro = ''
         if nodo.registro and nodo.registro.exists():
             with nodo.registro.open('rb') as archivo:
                 archivo.seek(max(0, nodo.registro.stat().st_size - 8000))
                 registro = archivo.read().decode('utf-8', errors='replace')
+        inicio, fin = self.actividad.yview()
         self.escribir(self.actividad, '\n'.join(nodo.eventos[-30:]) + '\n' + registro)
+        # Seguir las nuevas líneas solo si el usuario ya estaba al final.
+        self.actividad.yview_moveto(1.0 if fin >= 1.0 - 1e-6 else inicio)
 
     def detalle(self, _evento):
         seleccion = self.arbol.selection()
@@ -118,7 +236,7 @@ class AppAdministrador(tk.Tk):
         formulario = ttk.LabelFrame(self, text='Configuración de nodo local', padding=10)
         formulario.pack(fill='x', padx=10, pady=10)
         self.campos = {}
-        for fila, (etiqueta, valor) in enumerate([('Nombre/Ubicación', 'Nodo 1'), ('IP', '127.0.0.1'), ('Puerto', '7000'), ('Dificultad', '4')]):
+        for fila, (etiqueta, valor) in enumerate([('Nombre/Ubicación', 'Servidor 1'), ('IP', '127.0.0.1'), ('Puerto', '7000'), ('Dificultad', '4')]):
             ttk.Label(formulario, text=etiqueta).grid(row=fila, column=0, sticky='w')
             campo = ttk.Entry(formulario, width=35)
             campo.insert(0, valor)
@@ -139,11 +257,11 @@ class AppAdministrador(tk.Tk):
         self.tabla.configure(yscrollcommand=scroll.set)
         acciones = ttk.Frame(self, padding=10)
         acciones.pack(fill='x')
-        for texto, funcion in [('Ver nodo', self.abrir), ('Iniciar servidor', self.iniciar), ('Detener servidor', self.detener), ('Reiniciar servidor', self.reiniciar), ('Eliminar nodo', self.eliminar), ('Abrir cliente de incidentes', self.cliente)]:
+        for texto, funcion in [('Ver nodo', self.abrir), ('Iniciar servidor', self.iniciar), ('Detener servidor', self.detener), ('Reiniciar servidor', self.reiniciar), ('Eliminar nodo', self.eliminar), ('Abrir Wallet de Incidentes', self.cliente)]:
             ttk.Button(acciones, text=texto, command=funcion).pack(side='left', padx=3)
         self.sincronizar_tabla()
         self.campos['Nombre/Ubicación'].delete(0, 'end')
-        self.campos['Nombre/Ubicación'].insert(0, f'Nodo {len(self.gestor.nodos) + 1}')
+        self.campos['Nombre/Ubicación'].insert(0, f'Servidor {len(self.gestor.nodos) + 1}')
         self.sugerir_puerto(silencioso=True)
         self._ciclo_id = self.after(100, self.ciclo)
 

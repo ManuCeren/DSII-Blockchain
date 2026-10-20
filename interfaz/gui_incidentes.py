@@ -16,13 +16,13 @@ from cliente.cliente import Cliente, argumentos_cliente, puerto_cliente
 class AppBlockchain(tk.Tk):
     def __init__(self, cliente=None):
         super().__init__()
-        self.title("Blockchain de Incidentes de Seguridad Informática")
+        self.title("Wallet de Incidentes de Seguridad")
         self.geometry("900x560")
         self.minsize(760, 480)
 
         # Estas son vistas locales de JSON; el servidor administra el estado real.
         self.cliente = cliente if cliente is not None else Cliente()
-        self.title(f'Blockchain de Incidentes — {self.cliente.host}:{self.cliente.puerto}')
+        self.title(f'Wallet de Incidentes de Seguridad — {self.cliente.host}:{self.cliente.puerto}')
         self.bc = SimpleNamespace(cadena=[], dificultad=4)
         self.bloque_propuesto = None
         self.minando = False
@@ -197,7 +197,7 @@ class AppBlockchain(tk.Tk):
             messagebox.showerror('No se pudo conectar', str(error))
             return
         self.cliente = Cliente(host, puerto)
-        self.title(f'Blockchain de Incidentes — {host}:{puerto}')
+        self.title(f'Wallet de Incidentes de Seguridad — {host}:{puerto}')
         self._refrescar_arbol()
 
     def _cambiar_dificultad(self):

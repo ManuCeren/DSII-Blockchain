@@ -10,7 +10,7 @@ import threading
 
 from cryptography.fernet import InvalidToken
 
-from comunicacion import enviar_json, recibir_json
+from comunicacion import enviar_json, recibir_json, clave_contexto
 from core.blockchain import Blockchain
 from core.bloque import Bloque, validar_dificultad
 from core.incidente import Incidente
@@ -33,15 +33,22 @@ class BloqueDesenlazado(ValueError):
 class ServicioBlockchain:
     def __init__(self, dificultad=4, archivo_clave=None, archivo_cadena=None):
         self.almacen = AlmacenCadena(archivo_cadena or RAIZ / 'blockchain_7000.json')
-        existente = self.almacen.ruta.exists()
+        origen = self.almacen.origen
+        existente = origen is not None
+        if not existente and self.almacen.bloques.exists():
+            raise ValueError(f"Falta el índice de la cadena {self.almacen.ruta}; restaura el índice original.")
         self.bc = self.almacen.cargar() if existente else Blockchain(dificultad)
         ruta_clave = Path(archivo_clave) if archivo_clave is not None else RAIZ / 'clave_secreta.key'
         if any(b.transacciones for b in self.bc.cadena) and not ruta_clave.exists():
             raise ValueError('Falta la clave Fernet de la cadena existente; restaura su clave original.')
         self.encriptador = Encriptador(ruta_clave)
         self._validar_cifrado(self.bc)
-        if not existente:
-            self.almacen.guardar(self.bc)
+        # También migra explícitamente el formato v1 tras validar incidentes y cadena.
+        requiere_migracion = existente and origen != self.almacen.ruta
+        self.almacen.guardar(self.bc)
+        if requiere_migracion:
+            log.warning("Índice migrado/recuperado desde %s a %s; archivos anteriores conservados",
+                        origen, self.almacen.ruta)
         self.bloque_propuesto = None
         self.contador_incidentes = self._maximo_id(self.bc)
         # Las decisiones sobre la cadena y su guardado forman una operación.
@@ -177,14 +184,19 @@ class ServicioBlockchain:
 class _Manejador(socketserver.StreamRequestHandler):
     def handle(self):
         self.connection.settimeout(30)
+        contexto = "wallet"
         try:
-            solicitud = recibir_json(self.rfile)
+            prefijo = self.rfile.peek(1)
+            contexto = "nodos" if prefijo.startswith(b"n") else "wallet"
+            solicitud = recibir_json(self.rfile, contexto=contexto)
+            if contexto == "wallet" and solicitud.get("operacion") in ("RECIBIR_BLOQUE", "CONFIGURAR_VECINOS"):
+                raise ValueError("Operación reservada al canal de nodos.")
             resultado = self.server.procesar(solicitud)
             respuesta = {'ok': True, 'resultado': resultado}
         except (ValueError, UnicodeError, OSError, InvalidToken) as error:
             respuesta = {'ok': False, 'error': str(error)}
         try:
-            enviar_json(self.wfile, respuesta)
+            enviar_json(self.wfile, respuesta, contexto=contexto)
         except (OSError, ValueError):
             pass
 
@@ -201,6 +213,8 @@ class ServidorBlockchain(socketserver.ThreadingTCPServer):
         # La CLI valida el rango académico 7000–8000.
         super().__init__(direccion, _Manejador, bind_and_activate=False)
         self.red = None
+        clave_contexto("wallet")
+        clave_contexto("nodos")
         self._token_administracion = token_administracion
         try:
             self.server_bind()

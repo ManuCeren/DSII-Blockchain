@@ -310,7 +310,7 @@ class AdministradorNodos:
     def _cliente(nodo):
         c = nodo.configuracion
         host = '127.0.0.1' if c.host == '0.0.0.0' else c.host
-        return Cliente(host, c.puerto, timeout=1)
+        return Cliente(host, c.puerto, timeout=1, contexto="nodos")
 
     def consultar(self, puerto):
         nodo = self.nodos[puerto]
